@@ -20,7 +20,7 @@ namespace Neuromatic.Core
         /// </summary>
         /// <param name="inputs">Inputs for the model</param>
         /// <param name="outputs">Outputs for the model</param>
-        public Model(IEnumerable<Input> inputs, IEnumerable<Layer> outputs, Optimizer optimizer, IEnumerable<LossFunction> losses, IEnumerable<MetricFunction> metrics)
+        public Model(IEnumerable<Input> inputs, IEnumerable<Layer> outputs, IEnumerable<LossFunction> losses, Optimizer optimizer, IEnumerable<MetricFunction> metrics)
         {
             Inputs = inputs;
             Outputs = outputs;
