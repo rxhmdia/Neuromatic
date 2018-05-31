@@ -28,9 +28,25 @@ namespace Neuromatic.Core
         /// <param name="name">Name of the model node</param>
         /// <returns>Returns the found model node. Returns null when the node could not be found.</returns>
         public abstract ExecutableModelNode Node(string name);
-        
+
+        /// <summary>
+        /// Create a node that performs matrix multiplication
+        /// </summary>
+        /// <param name="left">Left node</param>
+        /// <param name="right">Right node</param>
+        /// <param name="name">Name of the node</param>
+        /// <returns>Returns the matrix multiplication node</returns>
+        public abstract ExecutableModelNode Dot(ExecutableModelNode left, ExecutableModelNode right, string name);
+
+        /// <summary>
+        /// Creates a trainable variable
+        /// </summary>
+        /// <param name="name">Name of the variable</param>
+        /// <returns>Returns the variable node</returns>
+        public abstract ExecutableModelNode Variable(string name);
+
         #region IDisposable Support
-        
+
         /// <summary>
         /// Disposes any resources used by the backend
         /// </summary>
@@ -45,6 +61,8 @@ namespace Neuromatic.Core
         {
             Dispose(true);
         }
+
+        
 
         #endregion
     }

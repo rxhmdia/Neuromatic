@@ -31,6 +31,24 @@ namespace Neutronal.Tensorflow
         public override ExecutableModel Output => throw new NotImplementedException();
 
         /// <summary>
+        /// Create a node that performs matrix multiplication
+        /// </summary>
+        /// <param name="left">Left node</param>
+        /// <param name="right">Right node</param>
+        /// <returns>Returns the matrix multiplication node</returns>
+        public override ExecutableModelNode Dot(ExecutableModelNode left, ExecutableModelNode right, string name)
+        {
+            return CreateNode(
+                _session.Graph.MatMul(
+                    ((TensorFlowGraphNode)left).Value, 
+                    ((TensorFlowGraphNode)right).Value, 
+                    operName: name
+                ),
+                name
+            );
+        }
+
+        /// <summary>
         /// Locates a node in the graph that is managed by the backend
         /// </summary>
         /// <param name="name">Name of the model node</param>
@@ -60,6 +78,16 @@ namespace Neutronal.Tensorflow
                 _session.Graph.Placeholder(TFDataType.Float, new TFShape(shape), name), 
                 name
             );
+        }
+
+        /// <summary>
+        /// Creates a trainable variable
+        /// </summary>
+        /// <param name="name">Name of the variable</param>
+        /// <returns>Returns the variable node</returns>
+        public override ExecutableModelNode Variable(string name)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

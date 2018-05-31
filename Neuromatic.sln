@@ -5,15 +5,13 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7C34628D-F06D-428F-B4C5-67A049B40487}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neutronal.Tensorflow", "src\Neutronal.Tensorflow\Neutronal.Tensorflow.csproj", "{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neuromatic", "src\Neuromatic\Neuromatic.csproj", "{9CE359D4-0F1F-4E2B-B2D4-34C98A4D1808}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neuromatic", "src\Neuromatic\Neuromatic.csproj", "{9CE359D4-0F1F-4E2B-B2D4-34C98A4D1808}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{906C6778-EFCB-4CA2-A0EF-23D1996D4529}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neuromatic.Tests", "test\Neuromatic.Tests\Neuromatic.Tests.csproj", "{B0C4EAF7-F3D3-4A66-8050-8B50150F1F8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neuromatic.Tests", "test\Neuromatic.Tests\Neuromatic.Tests.csproj", "{B0C4EAF7-F3D3-4A66-8050-8B50150F1F8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neuromatic.TensorFlow", "src\Neuromatic.TensorFlow\Neuromatic.TensorFlow.csproj", "{7B1DE21A-22C8-4929-A4BB-71D946B30284}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neuromatic.TensorFlow", "src\Neuromatic.TensorFlow\Neuromatic.TensorFlow.csproj", "{7B1DE21A-22C8-4929-A4BB-71D946B30284}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,18 +23,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Debug|x64.Build.0 = Debug|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Debug|x86.Build.0 = Debug|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Release|x64.ActiveCfg = Release|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Release|x64.Build.0 = Release|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Release|x86.ActiveCfg = Release|Any CPU
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF}.Release|x86.Build.0 = Release|Any CPU
 		{9CE359D4-0F1F-4E2B-B2D4-34C98A4D1808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9CE359D4-0F1F-4E2B-B2D4-34C98A4D1808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CE359D4-0F1F-4E2B-B2D4-34C98A4D1808}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -78,7 +64,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9B457B48-8403-4F05-BF0B-0D61DA19D8CF} = {7C34628D-F06D-428F-B4C5-67A049B40487}
 		{9CE359D4-0F1F-4E2B-B2D4-34C98A4D1808} = {7C34628D-F06D-428F-B4C5-67A049B40487}
 		{B0C4EAF7-F3D3-4A66-8050-8B50150F1F8F} = {906C6778-EFCB-4CA2-A0EF-23D1996D4529}
 		{7B1DE21A-22C8-4929-A4BB-71D946B30284} = {7C34628D-F06D-428F-B4C5-67A049B40487}
