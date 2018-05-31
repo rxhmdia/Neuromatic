@@ -1,7 +1,7 @@
-# Neutronal
+# Neuromatic
 A neural network abstraction for C# inspired by Keras. This project aims to make the use of CNTK and Tensorflow
-more straightforward from a C# developer perspective. It provides an easier abstraction to work so that you can experiment
-quicker.
+more straightforward from a C# developer perspective. It provides an easy to use abstraction so that you can experiment
+quicker and get your models in production quicker.
 
 ## Getting started
 TODO: Provide a getting started guide
