@@ -30,9 +30,9 @@ namespace Neuromatic.Layers
         /// Compiles the input layer
         /// </summary>
         /// <param name="backend">Backend to use for compilation</param>
-        internal override void Compile(ModelBackend backend)
+        internal override ExecutableModelNode Compile(ModelBackend backend)
         {
-            backend.Input(this);
+            return backend.Placeholder(this.Name, this.Shape);
         }
     }
 }

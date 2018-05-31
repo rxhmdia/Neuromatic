@@ -12,24 +12,29 @@ namespace Neuromatic.Core
     public abstract class ModelBackend: IDisposable
     {
         /// <summary>
-        /// Visit a model
-        /// </summary>
-        /// <param name="model">Model to visit</param>
-        public abstract void CreateModel(Model model);
-
-        /// <summary>
         /// Visits an input layer
         /// </summary>
         /// <param name="layer">Input layer to visit</param>
-        public abstract void Input(Input layer);
+        public abstract ExecutableModelNode Placeholder(string name, long[] shape);
 
         /// <summary>
         /// Gets the output for the visitor
         /// </summary>
         public abstract ExecutableModel Output { get; }
 
+        /// <summary>
+        /// Locates a node in the graph that is managed by the backend
+        /// </summary>
+        /// <param name="name">Name of the model node</param>
+        /// <returns>Returns the found model node. Returns null when the node could not be found.</returns>
+        public abstract ExecutableModelNode Node(string name);
+        
         #region IDisposable Support
         
+        /// <summary>
+        /// Disposes any resources used by the backend
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             
@@ -40,6 +45,7 @@ namespace Neuromatic.Core
         {
             Dispose(true);
         }
+
         #endregion
     }
 }
