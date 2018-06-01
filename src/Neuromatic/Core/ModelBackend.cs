@@ -9,7 +9,7 @@ namespace Neuromatic.Core
     /// <summary>
     /// Visitor used to compile the model to an executable graph
     /// </summary>
-    public abstract class ModelBackend: IDisposable
+    public abstract class ModelBackend : IDisposable
     {
         /// <summary>
         /// Visits an input layer
@@ -39,11 +39,40 @@ namespace Neuromatic.Core
         public abstract ExecutableModelNode Dot(ExecutableModelNode left, ExecutableModelNode right, string name);
 
         /// <summary>
-        /// Creates a trainable variable
+        /// Initializes a tensor with a normal distribution
         /// </summary>
-        /// <param name="name">Name of the variable</param>
-        /// <returns>Returns the variable node</returns>
-        public abstract ExecutableModelNode Variable(string name);
+        /// <param name="shape">Shape of the tensor</param>
+        /// <param name="mean">Mean value for the distribution</param>
+        /// <param name="standardDeviation">Standard deviation</param>
+        /// <param name="seed">Random seed to use</param>
+        /// <returns></returns>
+        public abstract ExecutableModelNode RandomNormal(long[] shape, float mean = 0.0f, float standardDeviation = 0.05f, int? seed = null);
+
+        /// <summary>
+        /// Creates a new set of weights for the model
+        /// </summary>
+        /// <param name="initializer">Initializer to use</param>
+        /// <param name="name">Name of the node</param>
+        /// <returns>Returns the model node for the weights</returns>
+        public abstract ExecutableModelNode Weights(long[] shape, InitializationFunction initializer, string name);
+
+        /// <summary>
+        /// Adds a bias term to the given model node
+        /// </summary>
+        /// <param name="node">Node to add the bias term to</param>
+        /// <param name="bias">Bias term to add</param>
+        /// <returns>Returns the new model node with the bias term added</returns>
+        public abstract ExecutableModelNode BiasAdd(ExecutableModelNode node, ExecutableModelNode bias);
+
+        /// <summary>
+        /// Gets the initializers supported by the model backend
+        /// </summary>
+        public abstract Initializers Initializers { get; }
+
+        /// <summary>
+        /// Gets the activation functions supported by the model backend
+        /// </summary>
+        public abstract Activations Activations { get; }
 
         #region IDisposable Support
 
@@ -53,7 +82,7 @@ namespace Neuromatic.Core
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            
+
         }
 
         // This code added to correctly implement the disposable pattern.
@@ -61,8 +90,6 @@ namespace Neuromatic.Core
         {
             Dispose(true);
         }
-
-        
 
         #endregion
     }

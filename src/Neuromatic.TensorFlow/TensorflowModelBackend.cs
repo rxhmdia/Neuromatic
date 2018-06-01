@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TensorFlow;
+using Neutronal.Tensorflow;
 
-namespace Neutronal.Tensorflow
+namespace Neuromatic.TensorFlow
 {
     /// <summary>
     /// A tensorflow implementation of the model backend
@@ -14,6 +15,8 @@ namespace Neutronal.Tensorflow
     {
         private TFSession _session;
         private Dictionary<string, TensorFlowGraphNode> _nodes;
+        private TensorflowInitializers _initializers;
+        private TensorFlowActivations _activations;
         private bool _disposed;
 
         /// <summary>
@@ -23,12 +26,42 @@ namespace Neutronal.Tensorflow
         {
             _session = new TFSession();
             _nodes = new Dictionary<string, TensorFlowGraphNode>();
+            _activations = new TensorFlowActivations(this);
+            _initializers = new TensorflowInitializers(this);
         }
 
         /// <summary>
         /// Gets the output for the currently compiled model
         /// </summary>
         public override ExecutableModel Output => throw new NotImplementedException();
+
+        /// <summary>
+        /// Gets the initializers supported by the model backend
+        /// </summary>
+        public override Initializers Initializers => _initializers;
+
+        /// <summary>
+        /// Gets the activation functions supported by the model backend
+        /// </summary>
+        public override Activations Activations => _activations;
+
+        /// <summary>
+        /// Adds a bias term to the given model node
+        /// </summary>
+        /// <param name="node">Node to add the bias term to</param>
+        /// <param name="bias">Bias term to add</param>
+        /// <returns>Returns the new model node with the bias term added</returns>
+        public override ExecutableModelNode BiasAdd(ExecutableModelNode node, ExecutableModelNode bias)
+        {
+            string nodeName = Guid.NewGuid().ToString();
+
+            return CreateNode(
+                _session.Graph.BiasAdd(
+                    ((TensorFlowGraphNode)node).Value,
+                    ((TensorFlowGraphNode)bias).Value, operName: nodeName
+                ), nodeName
+            );
+        }
 
         /// <summary>
         /// Create a node that performs matrix multiplication
@@ -40,8 +73,8 @@ namespace Neutronal.Tensorflow
         {
             return CreateNode(
                 _session.Graph.MatMul(
-                    ((TensorFlowGraphNode)left).Value, 
-                    ((TensorFlowGraphNode)right).Value, 
+                    ((TensorFlowGraphNode)left).Value,
+                    ((TensorFlowGraphNode)right).Value,
                     operName: name
                 ),
                 name
@@ -55,7 +88,7 @@ namespace Neutronal.Tensorflow
         /// <returns>Returns the found model node. Returns null when the node could not be found.</returns>
         public override ExecutableModelNode Node(string name)
         {
-            if(_nodes.TryGetValue(name, out TensorFlowGraphNode node))
+            if (_nodes.TryGetValue(name, out TensorFlowGraphNode node))
             {
                 return node;
             }
@@ -69,25 +102,46 @@ namespace Neutronal.Tensorflow
         /// <param name="layer">Input definition</param>
         public override ExecutableModelNode Placeholder(string name, long[] shape)
         {
-            if(_nodes.ContainsKey(name))
+            if (_nodes.ContainsKey(name))
             {
                 return _nodes[name];
             }
 
             return CreateNode(
-                _session.Graph.Placeholder(TFDataType.Float, new TFShape(shape), name), 
+                _session.Graph.Placeholder(TFDataType.Float, new TFShape(shape), name),
                 name
             );
         }
 
         /// <summary>
-        /// Creates a trainable variable
+        /// Initializes a tensor with a normal distribution
         /// </summary>
-        /// <param name="name">Name of the variable</param>
-        /// <returns>Returns the variable node</returns>
-        public override ExecutableModelNode Variable(string name)
+        /// <param name="shape">Shape of the tensor</param>
+        /// <param name="mean">Mean value for the distribution</param>
+        /// <param name="standardDeviation">Standard deviation</param>
+        /// <param name="seed">Random seed to use</param>
+        /// <returns></returns>
+        public override ExecutableModelNode RandomNormal(long[] shape, float mean = 0, float standardDeviation = 0.05F, int? seed = null)
         {
-            throw new NotImplementedException();
+            var nodeName = Guid.NewGuid().ToString();
+            var operation = _session.Graph.RandomNormal(new TFShape(shape), mean, standardDeviation, seed, nodeName);
+
+            return CreateNode(operation, nodeName);
+        }
+
+        /// <summary>
+        /// Creates a new set of weights for the model
+        /// </summary>
+        /// <param name="initializer">Initializer to use</param>
+        /// <param name="name">Name of the node</param>
+        /// <returns>Returns the model node for the weights</returns>
+        public override ExecutableModelNode Weights(long[] shape, InitializationFunction initializer, string name)
+        {
+            var operation = _session.Graph.Variable(
+                ((TensorFlowGraphNode)initializer.Create(shape)).Value,
+                operName: name);
+
+            return CreateNode(operation, name);
         }
 
         /// <summary>

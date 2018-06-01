@@ -62,8 +62,6 @@ namespace Neuromatic.Core
         /// <returns>Returns an executable model</returns>
         public ExecutableModel Compile(ModelBackend backend)
         {
-            backend.CreateModel(this);
-
             foreach (var input in Inputs)
             {
                 input.Compile(backend);

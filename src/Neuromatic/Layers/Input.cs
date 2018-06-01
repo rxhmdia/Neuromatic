@@ -16,7 +16,17 @@ namespace Neuromatic.Layers
         /// </summary>
         /// <param name="elements">Number of neurons in the input layer</param>
         /// <param name="name">Name of the input layer</param>
-        public Input(long[] shape, string name = null) : base(name)
+        public Input(long[] shape) : base(null)
+        {
+            Shape = shape;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="Input"/>
+        /// </summary>
+        /// <param name="name">Name of the layer</param>
+        /// <param name="shape">Shape of the input layer</param>
+        public Input(long[] shape, string name) : base(name)
         {
             Shape = shape;
         }
@@ -30,7 +40,7 @@ namespace Neuromatic.Layers
         /// Compiles the input layer
         /// </summary>
         /// <param name="backend">Backend to use for compilation</param>
-        internal override ExecutableModelNode Compile(ModelBackend backend)
+        public override ExecutableModelNode Compile(ModelBackend backend)
         {
             return backend.Placeholder(this.Name, this.Shape);
         }

@@ -16,6 +16,6 @@ namespace Neuromatic.Metrics
         /// </summary>
         /// <param name="output"></param>
         /// <param name="backend"></param>
-        public void Compile(Layer output, ModelBackend backend);
+        public abstract void Compile(Layer output, ModelBackend backend);
     }
 }

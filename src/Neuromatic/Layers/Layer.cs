@@ -37,6 +37,6 @@ namespace Neuromatic.Layers
         /// Compiles the layer
         /// </summary>
         /// <param name="backend">Backend to use for compilation</param>
-        internal abstract ExecutableModelNode Compile(ModelBackend backend);
+        public abstract ExecutableModelNode Compile(ModelBackend backend);
     }
 }
