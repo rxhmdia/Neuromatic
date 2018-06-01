@@ -20,7 +20,7 @@ namespace Neuromatic.Tests.Layers
             var randomNormal = new InitializationFunction(shape => A.Fake<ExecutableModelNode>());
 
             A.CallTo(
-                () => initializers.RandomNormal(A<float>.Ignored, A<float>.Ignored, A<float?>.Ignored)
+                () => initializers.RandomNormal(A<float>.Ignored, A<float>.Ignored, A<int?>.Ignored)
             ).Returns(randomNormal);
 
             A.CallTo(() => backend.Activations).Returns(activations);
@@ -33,7 +33,7 @@ namespace Neuromatic.Tests.Layers
         public void WhenCompiledReturnsExecutableNode()
         {
             var backend = CreateBackend();
-            var layer = new Dense("Test", 10, backend.Activations.Sigmoid(), new Input(new long[] { -1, 20 }));
+            var layer = new Dense(10, backend.Activations.Sigmoid(), new Input(new long[] { -1, 20 }), "Test");
 
             var executableNode = layer.Compile(backend);
 
@@ -44,7 +44,7 @@ namespace Neuromatic.Tests.Layers
         public void WhenCompiledConfiguresCorrectOutputShape()
         {
             var backend = CreateBackend();
-            var layer = new Dense("Test", 10, backend.Activations.Sigmoid(), new Input(new long[] { -1, 20 }));
+            var layer = new Dense(10, backend.Activations.Sigmoid(), new Input(new long[] { -1, 20 }), "Test");
 
             var executableNode = layer.Compile(backend);
 

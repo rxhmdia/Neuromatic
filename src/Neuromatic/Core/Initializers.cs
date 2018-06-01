@@ -16,6 +16,6 @@ namespace Neuromatic.Core
         /// <param name="standardDeviation">Standard distribution (default 0.05)</param>
         /// <param name="seed">The random seed</param>
         /// <returns>Returns the new initializer</returns>
-        public abstract InitializationFunction RandomNormal(float mean = 0.0f, float standardDeviation = 0.05f, float? seed = null);
+        public abstract InitializationFunction RandomNormal(float mean = 0.0f, float standardDeviation = 0.05f, int? seed = null);
     }
 }

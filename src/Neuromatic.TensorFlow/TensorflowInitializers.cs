@@ -25,7 +25,7 @@ namespace Neuromatic.TensorFlow
         /// <param name="standardDeviation">Standard distribution (default 0.05)</param>
         /// <param name="seed">The random seed</param>
         /// <returns>Returns the new initializer</returns>
-        public override InitializationFunction RandomNormal(float mean = 0, float standardDeviation = 0.05F, float? seed = null)
+        public override InitializationFunction RandomNormal(float mean = 0, float standardDeviation = 0.05F, int? seed = null)
         {
             return new InitializationFunction((long[] shape) => _backend.RandomNormal(shape, mean, standardDeviation, seed));
         }

@@ -6,6 +6,12 @@ using TensorFlow;
 
 namespace Neuromatic.Layers
 {
+    /// <summary>
+    /// A dense layer connects all its inputs to a defined number of outputs. 
+    /// You can control the density of the connections with weights and a bias term.
+    /// The output of each of the connections is passed through an activation function to
+    /// control the strength of the output signal.
+    /// </summary>
     public class Dense : Layer
     {
         private long[] _outputShape;
@@ -16,7 +22,7 @@ namespace Neuromatic.Layers
         /// <param name="name"></param>
         /// <param name="shape"></param>
         /// <param name="input"></param>
-        public Dense(string name, int units, ActivationFunction activation, Layer input) : base(name)
+        public Dense(int units, ActivationFunction activation, Layer input, string name) : base(name)
         {
             Units = units;
             Input = input;
@@ -30,11 +36,11 @@ namespace Neuromatic.Layers
         /// <param name="activation"></param>
         /// <param name="kernelInitializer"></param>
         /// <param name="input"></param>
-        public Dense(string name, int units,
+        public Dense(int units,
             ActivationFunction activation,
             InitializationFunction kernelInitializer,
             InitializationFunction biasInitializer,
-            Layer input) : base(name)
+            Layer input, string name) : base(name)
         {
             Units = units;
             Input = input;
