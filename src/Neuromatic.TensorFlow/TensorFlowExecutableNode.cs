@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using TensorFlow;
 
-namespace Neutronal.Tensorflow
+namespace Neuromatic.TensorFlow
 {
     /// <summary>
     /// Defines a reference to a Tensorflow symbol

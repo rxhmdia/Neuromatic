@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neuromatic.Tests", "test\Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neuromatic.TensorFlow", "src\Neuromatic.TensorFlow\Neuromatic.TensorFlow.csproj", "{7B1DE21A-22C8-4929-A4BB-71D946B30284}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neuromatic.TensorFlow.Tests", "test\Neuromatic.TensorFlow.Tests\Neuromatic.TensorFlow.Tests.csproj", "{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,18 @@ Global
 		{7B1DE21A-22C8-4929-A4BB-71D946B30284}.Release|x64.Build.0 = Release|Any CPU
 		{7B1DE21A-22C8-4929-A4BB-71D946B30284}.Release|x86.ActiveCfg = Release|Any CPU
 		{7B1DE21A-22C8-4929-A4BB-71D946B30284}.Release|x86.Build.0 = Release|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Debug|x64.Build.0 = Debug|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Debug|x86.Build.0 = Debug|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Release|x64.ActiveCfg = Release|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Release|x64.Build.0 = Release|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Release|x86.ActiveCfg = Release|Any CPU
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +81,7 @@ Global
 		{9CE359D4-0F1F-4E2B-B2D4-34C98A4D1808} = {7C34628D-F06D-428F-B4C5-67A049B40487}
 		{B0C4EAF7-F3D3-4A66-8050-8B50150F1F8F} = {906C6778-EFCB-4CA2-A0EF-23D1996D4529}
 		{7B1DE21A-22C8-4929-A4BB-71D946B30284} = {7C34628D-F06D-428F-B4C5-67A049B40487}
+		{6C5AA3C6-D576-4B55-8E67-FDB8B24B8507} = {906C6778-EFCB-4CA2-A0EF-23D1996D4529}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A3DA3895-D0BA-4585-B532-FA24593DE14F}

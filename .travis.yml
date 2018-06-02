@@ -1,2 +1,5 @@
 language: csharp
 solution: Neuromatic.sln
+branches:
+  only:
+    - master

@@ -65,6 +65,31 @@ namespace Neuromatic.Core
         public abstract ExecutableModelNode BiasAdd(ExecutableModelNode node, ExecutableModelNode bias);
 
         /// <summary>
+        /// Creates a new constant value
+        /// </summary>
+        /// <param name="value">Value for the constant</param>
+        /// <param name="name">Name of the constant</param>
+        /// <returns>Returns the node for the constant value</returns>
+        public abstract ExecutableModelNode Constant(object value, long[] shape, string name);
+
+        /// <summary>
+        /// Creates a functions that adds two inputs
+        /// </summary>
+        /// <param name="a">First input</param>
+        /// <param name="b">Second input</param>
+        /// <param name="name">Name of the operation</param>
+        /// <returns>Returns the node for the add operation</returns>
+        public abstract ExecutableModelNode Add(ExecutableModelNode a, ExecutableModelNode b, string name);
+
+        /// <summary>
+        /// Creates a function bound to the backend
+        /// </summary>
+        /// <param name="defaultInputs">The default values for all placeholders in the function</param>
+        /// <param name="outputs">The list of outputs to fetch as part of the function</param>
+        /// <returns>Returns an executable function</returns>
+        public abstract BackendFunction Function(IDictionary<ExecutableModelNode, object> defaultInputs, IEnumerable<ExecutableModelNode> outputs);
+
+        /// <summary>
         /// Gets the initializers supported by the model backend
         /// </summary>
         public abstract Initializers Initializers { get; }

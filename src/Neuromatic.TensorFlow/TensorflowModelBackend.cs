@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TensorFlow;
-using Neutronal.Tensorflow;
 
 namespace Neuromatic.TensorFlow
 {
@@ -61,6 +60,18 @@ namespace Neuromatic.TensorFlow
                     ((TensorFlowGraphNode)bias).Value, operName: nodeName
                 ), nodeName
             );
+        }
+
+        /// <summary>
+        /// Creates a new constant value
+        /// </summary>
+        /// <param name="value">Value for the constant</param>
+        /// <param name="name">Name of the constant</param>
+        /// <returns>Returns the node for the constant value</returns>
+        public override ExecutableModelNode Constant(object value, long[] shape, string name)
+        {
+            var constantDefinition = _session.Graph.Constant(value, new TFShape(shape), operName: name);
+            return CreateNode(constantDefinition, name);
         }
 
         /// <summary>
@@ -173,5 +184,38 @@ namespace Neuromatic.TensorFlow
 
             return node;
         }
+
+        /// <summary>
+        /// Creates a functions that adds two inputs
+        /// </summary>
+        /// <param name="a">First input</param>
+        /// <param name="b">Second input</param>
+        /// <param name="name">Name of the operation</param>
+        /// <returns>Returns the node for the add operation</returns>
+        public override ExecutableModelNode Add(ExecutableModelNode a, ExecutableModelNode b, string name)
+        {
+            var operation = _session.Graph.Add(
+                ((TensorFlowGraphNode)a).Value, 
+                ((TensorFlowGraphNode)b).Value, 
+                name);
+
+            return CreateNode(operation, name);
+        }
+
+        /// <summary>
+        /// Creates a function bound to the backend
+        /// </summary>
+        /// <param name="defaultInputs">The default values for all placeholders in the function</param>
+        /// <param name="outputs">The list of outputs to fetch as part of the function</param>
+        /// <returns>Returns an executable function</returns>
+        public override BackendFunction Function(IDictionary<ExecutableModelNode, object> defaultInputs, IEnumerable<ExecutableModelNode> outputs)
+        {
+            return new TensorFlowBackendFunction(_session, defaultInputs, outputs);
+        }
+
+        /// <summary>
+        /// Gets the session used by the model backend
+        /// </summary>
+        public TFSession Session => _session;
     }
 }
