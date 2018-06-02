@@ -1,5 +1,7 @@
 # Neuromatic
 [![Build Status](https://travis-ci.org/wmeints/Neuromatic.svg?branch=master)](https://travis-ci.org/wmeints/Neuromatic)
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/wmeints/Neuromatic.svg?columns=all)](https://waffle.io/wmeints/Neuromatic)
+
 
 A neural network abstraction for C# inspired by Keras. This project aims to make the use of CNTK and Tensorflow
 more straightforward from a C# developer perspective. It provides an easy to use abstraction so that you can experiment
