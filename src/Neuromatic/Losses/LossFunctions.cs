@@ -16,6 +16,6 @@ namespace Neuromatic.Losses
         /// </summary>
         /// <param name="output">Output layer</param>
         /// <param name="backend">Model backend to use for compiling the loss function</param>
-        public abstract void Compile(Layer output, ModelBackend backend);
+        public abstract ExecutableModelNode Compile(ExecutableModelNode output, ExecutableModelNode target, ModelBackend backend);
     }
 }

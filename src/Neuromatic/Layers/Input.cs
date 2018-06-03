@@ -42,6 +42,11 @@ namespace Neuromatic.Layers
         /// <param name="backend">Backend to use for compilation</param>
         public override ExecutableModelNode Compile(ModelBackend backend)
         {
+            if(Name == null)
+            {
+                Name = $"Input_{Guid.NewGuid().ToString()}";
+            }
+
             return backend.Placeholder(this.Name, this.Shape);
         }
     }

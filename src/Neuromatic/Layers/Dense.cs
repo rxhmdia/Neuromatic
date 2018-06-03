@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Neuromatic.Activations;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Neuromatic.Core;
+using Neuromatic.Initializers;
 using TensorFlow;
 
 namespace Neuromatic.Layers
@@ -88,17 +90,18 @@ namespace Neuromatic.Layers
         {
             _outputShape = CalculateOutputShape();
 
-            var kernelInitializer = KernelInitializer ?? backend.Initializers.RandomNormal();
-            var biasInitializer = BiasInitializer ?? backend.Initializers.RandomNormal();
-            var activation = Activation ?? backend.Activations.Sigmoid();
+            var kernelInitializer = KernelInitializer ?? StandardInitializers.RandomNormal();
+            var biasInitializer = BiasInitializer ?? StandardInitializers.RandomNormal();
+            var activation = Activation ?? StandardActivations.Sigmoid();
 
             var weights = backend.Weights(new long[] { Input.Shape[1], Units }, kernelInitializer, $"{Name}_Weights");
-            var bias = backend.Weights(new long[] { Units, -1 }, biasInitializer, $"{Name}_Bias");
+            var bias = backend.Weights(new long[] { Units }, biasInitializer, $"{Name}_Bias");
 
             var output = backend.Dot(Input.Compile(backend), weights, $"{Name}_MatMul");
+
             output = backend.BiasAdd(output, bias);
 
-            return activation.Create(output);
+            return activation.Compile(output, backend);
         }
 
         /// <summary>

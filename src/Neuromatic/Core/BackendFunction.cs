@@ -15,10 +15,14 @@ namespace Neuromatic.Core
         /// </summary>
         /// <param name="inputs">Mapping for inputs with their default values</param>
         /// <param name="outputs">List of outputs to fetch as part of the function</param>
-        protected BackendFunction(IDictionary<ExecutableModelNode, object> inputs, IEnumerable<ExecutableModelNode> outputs)
+        protected BackendFunction(
+            IEnumerable<ExecutableModelNode> inputs, 
+            IEnumerable<ExecutableModelNode> outputs,
+            IEnumerable<ExecutableModelNode> updates)
         {
             Outputs = outputs;
             Inputs = inputs;
+            Updates = updates;
         }
 
         /// <summary>
@@ -29,7 +33,12 @@ namespace Neuromatic.Core
         /// <summary>
         /// Gets the default inputs for the function
         /// </summary>
-        protected IDictionary<ExecutableModelNode, object> Inputs { get; }
+        protected IEnumerable<ExecutableModelNode> Inputs { get; }
+
+        /// <summary>
+        /// Gets the updates to perform as part of the function
+        /// </summary>
+        protected IEnumerable<ExecutableModelNode> Updates { get; }
 
         /// <summary>
         /// Executes the function against the backend
@@ -37,41 +46,7 @@ namespace Neuromatic.Core
         /// <param name="inputs">Input values for the function. Values provided here override the defaults
         /// provided in the <see cref="Inputs"/> property.</param>
         /// <returns>Returns the values fetched for the specified outputs</returns>
-        public abstract IEnumerable<object> Execute(IDictionary<ExecutableModelNode, object> inputs);
+        public abstract IEnumerable<object> Execute(IEnumerable<object> inputs);
 
-        /// <summary>
-        /// Executes the function against the backend
-        /// </summary>
-        /// <returns>Returns the values fetched for the specified outputs</returns>
-        public IEnumerable<object> Execute()
-        {
-            return Execute(new Dictionary<ExecutableModelNode, object>());
-        }
-
-        /// <summary>
-        /// Merges the provided input override values with the defaults provided in the <see cref="Inputs"/> property.
-        /// The defaults are always overwritten by the provided input overrides.
-        /// </summary>
-        /// <param name="inputOverrides">Set of input override values</param>
-        /// <returns>The merged input values for the function</returns>
-        protected IDictionary<ExecutableModelNode, object> MergeInputValues(IDictionary<ExecutableModelNode, object> inputOverrides)
-        {
-            var output = new Dictionary<ExecutableModelNode, object>();
-
-            foreach(var keyValuePair in Inputs)
-            {
-                if(!inputOverrides.ContainsKey(keyValuePair.Key))
-                {
-                    output.Add(keyValuePair.Key, keyValuePair.Value);
-                }
-            }
-
-            foreach(var keyValuePair in inputOverrides)
-            {
-                output.Add(keyValuePair.Key, keyValuePair.Value);
-            }
-
-            return output;
-        }
     }
 }

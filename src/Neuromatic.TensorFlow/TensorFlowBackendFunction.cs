@@ -14,7 +14,7 @@ namespace Neuromatic.TensorFlow
     public class TensorFlowBackendFunction : BackendFunction
     {
         private TFSession _session;
-        
+
         /// <summary>
         /// Initializes a new instance of <see cref="TensorFlowBackendFunction"/>
         /// </summary>
@@ -22,10 +22,11 @@ namespace Neuromatic.TensorFlow
         /// <param name="inputs"></param>
         /// <param name="outputs"></param>
         public TensorFlowBackendFunction(
-            TFSession session, 
-            IDictionary<ExecutableModelNode, object> inputs, 
-            IEnumerable<ExecutableModelNode> outputs)
-            : base(inputs, outputs)
+            TFSession session,
+            IEnumerable<ExecutableModelNode> inputs,
+            IEnumerable<ExecutableModelNode> outputs,
+            IEnumerable<ExecutableModelNode> updates)
+            : base(inputs, outputs, updates)
         {
             _session = session;
         }
@@ -34,16 +35,17 @@ namespace Neuromatic.TensorFlow
         /// Executes the function on the tensorflow session
         /// </summary>
         /// <returns>Returns the fetched outputs</returns>
-        public override IEnumerable<object> Execute(IDictionary<ExecutableModelNode, object> inputs)
+        public override IEnumerable<object> Execute(IEnumerable<object> inputValues)
         {
             var runner = _session.GetRunner();
 
-            var (inputSymbols, inputValues) = MapInputValues(MergeInputValues(inputs));
+            var inputSymbols = MapInputSymbols();
+            var inputTensors = MapInputValues(inputValues);
             var outputSymbols = Outputs.Select(x => ((TensorFlowGraphNode)x).Value).ToArray();
 
             var outputValues = _session.Run(
                 inputSymbols.ToArray(),
-                inputValues.ToArray(),
+                inputTensors.ToArray(),
                 outputSymbols.ToArray());
 
             return outputValues.Select(x => MapOutputValue(x)).ToList();
@@ -59,15 +61,15 @@ namespace Neuromatic.TensorFlow
         {
             switch (value)
             {
-                case float[] floats:
-                    return new TFTensor(floats);
+                case Array arrayValue:
+                    return new TFTensor(arrayValue);
                 case float floatValue:
                     return new TFTensor(floatValue);
                 default:
                     throw new ArgumentException($"Specified value type {value.GetType()} is not supported");
             }
         }
-        
+
         /// <summary>
         /// Maps the output value of the given tensor to a raw value that is usable in the .NET runtime.
         /// </summary>
@@ -83,18 +85,14 @@ namespace Neuromatic.TensorFlow
         /// </summary>
         /// <param name="inputValues">Input values to map</param>
         /// <returns>Returns a list of symbols and a list of values for the symbols. Entries match on index.</returns>
-        (IEnumerable<TFOutput>, IEnumerable<TFTensor>) MapInputValues(IDictionary<ExecutableModelNode, object> inputValues)
+        IEnumerable<TFOutput> MapInputSymbols()
         {
-            var symbols = new List<TFOutput>();
-            var values = new List<TFTensor>();
+            return Inputs.Select(x => ((TensorFlowGraphNode)x).Value);
+        }
 
-            foreach (var keyValuePair in inputValues)
-            {
-                symbols.Add(((TensorFlowGraphNode)keyValuePair.Key).Value);
-                values.Add(MapInputValue(keyValuePair.Value));
-            }
-
-            return (symbols, values);
+        IEnumerable<TFTensor> MapInputValues(IEnumerable<object> inputValues)
+        {
+            return inputValues.Select(x => MapInputValue(x));
         }
     }
 }
