@@ -1,0 +1,4 @@
+[submodule "external/tensorflowsharp"]
+	path = external/tensorflowsharp
+	url = git@github.com:wmeints/TensorFlowSharp.git
+	branch = master
