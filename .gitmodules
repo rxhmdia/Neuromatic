@@ -2,3 +2,7 @@
 	path = external/tensorflowsharp
 	url = git@github.com:wmeints/TensorFlowSharp.git
 	branch = master
+[submodule "external/tensorflow"]
+	path = external/tensorflow
+	url = git@github.com:wmeints/tensorflow.git
+	branch = master
