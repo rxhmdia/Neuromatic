@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Neuromatic.Losses;
+using System;
 using System.Collections.Generic;
 
 namespace Neuromatic
