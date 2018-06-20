@@ -1,125 +1,175 @@
-﻿using Neuromatic.Activations;
+﻿using Neuromatic.Initializers;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Neuromatic.Core;
-using Neuromatic.Initializers;
 using TensorFlow;
 
 namespace Neuromatic.Layers
 {
     /// <summary>
-    /// A dense layer connects all its inputs to a defined number of outputs. 
-    /// You can control the density of the connections with weights and a bias term.
-    /// The output of each of the connections is passed through an activation function to
-    /// control the strength of the output signal.
+    /// <para>
+    /// Dense layers are used to create fully connected layers in neural networks.
+    /// The layer implements the function output = activation(dot(input,kernel) + bias).
+    /// </para>
+    /// <para>
+    /// <b>activation</b> is the element-wise activation function applied to the summed inputs. 
+    /// <b>kernel</b> is a set of weights initialized using the weights initialization function.
+    /// <b>bias</b> is a vector initialized using the bias initialization function.
+    /// </para>
     /// </summary>
     public class Dense : Layer
     {
-        private long[] _outputShape;
+        private int _units;
+        private InitializationFunction _weightsInitializer;
+        private InitializationFunction _biasInitializer;
+        private Layer _input;
 
         /// <summary>
         /// Initializes a new instance of <see cref="Dense"/>
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="shape"></param>
-        /// <param name="input"></param>
-        public Dense(int units, ActivationFunction activation, Layer input, string name) : base(name)
+        /// <param name="units">Kernel size of the layer</param>
+        /// <param name="input">Input layer to connect to</param>
+        /// <param name="biasInitializer">Initialization function for the bias vector</param>
+        /// <param name="weightsInitializer">Initialization function for the weights matrix</param>
+        public Dense(int units, InitializationFunction weightsInitializer, InitializationFunction biasInitializer, Layer input)
         {
-            Units = units;
-            Input = input;
+            if (_units <= 0)
+            {
+                throw new ArgumentException("Invalid layer size. Should be greater than zero", nameof(units));
+            }
+
+            if (_weightsInitializer == null)
+            {
+                throw new ArgumentNullException(nameof(weightsInitializer));
+            }
+
+            if (_biasInitializer == null)
+            {
+                throw new ArgumentNullException(nameof(biasInitializer));
+            }
+
+            if (_input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            _units = units;
+            _weightsInitializer = weightsInitializer;
+            _biasInitializer = biasInitializer;
+            _input = input;
         }
 
         /// <summary>
         /// Initializes a new instance of <see cref="Dense"/>
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="units"></param>
-        /// <param name="activation"></param>
-        /// <param name="kernelInitializer"></param>
-        /// <param name="input"></param>
-        public Dense(int units,
-            ActivationFunction activation,
-            InitializationFunction kernelInitializer,
-            InitializationFunction biasInitializer,
-            Layer input, string name) : base(name)
+        /// <param name="units">Kernel size of the layer</param>
+        /// <param name="input">Input layer to connect to</param>
+        /// <param name="biasInitializer">Initialization function for the bias vector</param>
+        /// <param name="weightsInitializer">Initialization function for the weights matrix</param>
+        /// <param name="name">Name of the layer</param>
+        public Dense(int units, InitializationFunction weightsInitializer, InitializationFunction biasInitializer, Layer input, string name) : base(name)
         {
-            Units = units;
-            Input = input;
-            KernelInitializer = kernelInitializer;
-            BiasInitializer = biasInitializer;
-            Activation = activation;
+            if (units <= 0)
+            {
+                throw new ArgumentException("Invalid layer size. Should be greater than zero", nameof(units));
+            }
+
+            _units = units;
+            _weightsInitializer = weightsInitializer ?? throw new ArgumentNullException(nameof(weightsInitializer));
+            _biasInitializer = biasInitializer ?? throw new ArgumentNullException(nameof(biasInitializer));
+            _input = input ?? throw new ArgumentNullException(nameof(input));
         }
 
         /// <summary>
-        /// Gets the shape of the layer
+        /// Initializes a new instance of <see cref="Dense"/>
         /// </summary>
-        public override long[] Shape => _outputShape;
+        /// <param name="units">Kernel size of the layer</param>
+        /// <param name="input">Input layer to connect to</param>
+        /// <param name="name">Name of the layer</param>
+        public Dense(int units, Layer input, string name) : base(name)
+        {
+            if (units <= 0)
+            {
+                throw new ArgumentException("Invalid layer size. Should be greater than zero", nameof(units));
+            }
+
+            _units = units;
+            _input = input ?? throw new ArgumentNullException(nameof(input));
+            _weightsInitializer = new RandomNormal();
+            _biasInitializer = new RandomNormal();
+        }
 
         /// <summary>
-        /// Gets the number of units in the dense layer
+        /// Initializes a new instance of <see cref="Dense"/>
         /// </summary>
-        public int Units { get; }
+        /// <param name="units">Kernel size of the layer</param>
+        /// <param name="input">Input layer to connect to</param>
+        public Dense(int units, Layer input)
+        {
+            _units = units;
+            _input = input;
+            _weightsInitializer = new RandomNormal();
+            _biasInitializer = new RandomNormal();
+        }
 
         /// <summary>
-        /// Gets the input for the layer
+        /// Gets the output shape for the layer
         /// </summary>
-        public Layer Input { get; }
+        public override long[] OutputShape
+        {
+            get
+            {
+                long[] shape = new long[_input.OutputShape.Length];
 
-        /// <summary>
-        /// Gets the initializer for the weights
-        /// </summary>
-        public InitializationFunction KernelInitializer { get; }
+                for (int index = 0; index < _input.OutputShape.Length - 1; index++)
+                {
+                    shape[index] = _input.OutputShape[index];
+                }
 
-        /// <summary>
-        /// Gets the initializer for the bias term
-        /// </summary>
-        public InitializationFunction BiasInitializer { get; }
+                shape[shape.Length - 1] = _units;
 
-        /// <summary>
-        /// Gets the activation function
-        /// </summary>
-        public ActivationFunction Activation { get; }
+                return shape;
+            }
+        }
 
         /// <summary>
         /// Compiles the dense layer
         /// </summary>
-        /// <param name="backend">Backend to use for performing compilation</param>
-        /// <returns>Returns the compiled layer output node</returns>
-        public override ExecutableModelNode Compile(ModelBackend backend)
+        /// <param name="graph">Graph to use for compiling the dense layer</param>
+        public override void Compile(TFGraph graph)
         {
-            _outputShape = CalculateOutputShape();
-
-            var kernelInitializer = KernelInitializer ?? StandardInitializers.RandomNormal();
-            var biasInitializer = BiasInitializer ?? StandardInitializers.RandomNormal();
-            var activation = Activation ?? StandardActivations.Sigmoid();
-
-            var weights = backend.Weights(new long[] { Input.Shape[1], Units }, kernelInitializer, $"{Name}_Weights");
-            var bias = backend.Weights(new long[] { Units }, biasInitializer, $"{Name}_Bias");
-
-            var output = backend.Dot(Input.Compile(backend), weights, $"{Name}_MatMul");
-
-            output = backend.BiasAdd(output, bias);
-
-            return activation.Compile(output, backend);
-        }
-
-        /// <summary>
-        /// Calculates the output shape for the layer
-        /// </summary>
-        /// <returns>Returns the shape of the layer</returns>
-        long[] CalculateOutputShape()
-        {
-            long[] outputShape = new long[Input.Shape.Length];
-
-            for (int index = 0; index < outputShape.Length - 1; index++)
+            if (!_input.Compiled)
             {
-                outputShape[index] = Input.Shape[index];
+                _input.Compile(graph);
             }
 
-            outputShape[outputShape.Length - 1] = Units;
+            var inputDimension = _input.OutputShape[_input.OutputShape.Length - 1];
 
-            return outputShape;
+            using (var scope = graph.WithScope(Name))
+            {
+                TFShape weightsShape = new TFShape(inputDimension, _units);
+                TFShape biasShape = new TFShape(_units);
+
+                var weights = graph.VariableV2(
+                    weightsShape,
+                    TFDataType.Double, operName: "Weights");
+
+                var bias = graph.VariableV2(
+                    biasShape,
+                    TFDataType.Double, operName: "Bias");
+
+                var initializers = new[]
+                {
+                    graph.Assign(weights, _weightsInitializer.Compile(graph, weightsShape)).Operation,
+                    graph.Assign(bias, _biasInitializer.Compile(graph, biasShape)).Operation
+                };
+
+                // Formula: input * W + b
+                // TODO: Make sure that we can work without a bias term.
+                var output = graph.Add(graph.MatMul(_input.Configuration.Output, weights), bias);
+
+                Configuration = new LayerConfiguration(new[] { weights, bias }, output, initializers);
+            }
         }
     }
 }

@@ -1,10 +1,8 @@
-﻿using FakeItEasy;
-using Neuromatic.Core;
-using Neuromatic.Initializers;
-using Neuromatic.Layers;
+﻿using Neuromatic.Layers;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TensorFlow;
 using Xunit;
 using FluentAssertions;
 
@@ -12,33 +10,33 @@ namespace Neuromatic.Tests.Layers
 {
     public class DenseTests
     {
-        private ModelBackend CreateBackend()
+        [Fact]
+        public void CreatesLayerConfigurationDuringCompilation()
         {
-            var backend = A.Fake<ModelBackend>();
+            var graph = new TFGraph();
+            var input = new Input(new[] { 10L });
             
-            return backend;
+            var dense = new Dense(2, input,"Dense0");
+
+            dense.Compile(graph);
+
+            dense.Configuration.Initializers.Length.Should().Be(2);
+            dense.Configuration.Parameters.Length.Should().Be(2);
+            dense.Configuration.Output.Should().NotBeNull();
         }
 
         [Fact]
-        public void WhenCompiledReturnsExecutableNode()
+        public void OutputShapeIsEqualToKernelSize()
         {
-            var backend = CreateBackend();
-            var layer = new Dense(10, StandardActivations.Sigmoid(), new Input(new long[] { -1, 20 }), "Test");
+            var graph = new TFGraph();
+            var input = new Input(new[] { 10L });
 
-            var executableNode = layer.Compile(backend);
+            input.Compile(graph);
 
-            executableNode.Should().NotBeNull();
-        }
+            var dense = new Dense(2, input, "Dense0");
 
-        [Fact]
-        public void WhenCompiledConfiguresCorrectOutputShape()
-        {
-            var backend = CreateBackend();
-            var layer = new Dense(10, StandardActivations.Sigmoid(), new Input(new long[] { -1, 20 }), "Test");
-
-            var executableNode = layer.Compile(backend);
-
-            layer.Shape.Should().BeEquivalentTo(new long[] { -1, 10 });
+            dense.OutputShape.Should().BeEquivalentTo(new long[] { -1, 2 });
         }
     }
+
 }

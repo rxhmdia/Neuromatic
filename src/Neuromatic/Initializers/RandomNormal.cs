@@ -1,52 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Neuromatic.Core;
+using TensorFlow;
 
 namespace Neuromatic.Initializers
 {
     /// <summary>
-    /// Initializes variables with a normal distributed set of values
+    /// Initializer function that generates a tensor with random normally distributed set of numbers.
     /// </summary>
     public class RandomNormal : InitializationFunction
     {
+        private double _mean;
+        private double _standardDeviation;
+        private int? _seed;
+
         /// <summary>
         /// Initializes a new instance of <see cref="RandomNormal"/>
         /// </summary>
         /// <param name="mean">Mean of the distribution</param>
         /// <param name="standardDeviation">Standard deviation of the distribution</param>
-        /// <param name="seed">Random seed to use for the random number generator</param>
-        public RandomNormal(float mean, float standardDeviation, int? seed)
+        /// <param name="seed">Random seed</param>
+        public RandomNormal(double mean = 0.0, double standardDeviation = 0.05, int? seed = null)
         {
-            Seed = seed;
-            StandardDeviation = standardDeviation;
-            Mean = mean;
+            _mean = mean;
+            _standardDeviation = standardDeviation;
+            _seed = seed;
         }
-
-        /// <summary>
-        /// Mean of the distribution
-        /// </summary>
-        public float Mean { get; set; }
-
-        /// <summary>
-        /// Standard deviation to use for the distribution
-        /// </summary>
-        public float StandardDeviation { get; set; }
-        
-        /// <summary>
-        /// Random seed used to initialize the function
-        /// </summary>
-        public int? Seed { get; set; }
 
         /// <summary>
         /// Compiles the initialization function
         /// </summary>
-        /// <param name="shape">Shape of the variable to initialize</param>
-        /// <param name="backend">Backend to use for compilation</param>
-        /// <returns></returns>
-        public override ExecutableModelNode Compile(long[] shape, ModelBackend backend)
+        /// <param name="graph">Tensorflow graph to use for creating the initialization function</param>
+        /// <param name="shape">The shape of the variable to initialize</param>
+        /// <returns>Returns the compiled initialization function</returns>
+        public override TFOutput Compile(TFGraph graph, TFShape shape)
         {
-            return backend.Float(backend.RandomNormal(shape, Mean, StandardDeviation, Seed));
+            return graph.RandomNormal(shape, _mean, _standardDeviation, _seed);
         }
     }
 }

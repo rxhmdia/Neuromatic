@@ -1,10 +1,10 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
-using Neuromatic.Core;
 using Neuromatic.Layers;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TensorFlow;
 using Xunit;
 
 namespace Neuromatic.Tests.Layers
@@ -12,25 +12,34 @@ namespace Neuromatic.Tests.Layers
     public class InputTests
     {
         [Fact]
-        public void WhenCompiledReturnsPlaceholders()
+        public void CreatesLayerConfigurationDuringCompilation()
         {
-            var backend = A.Fake<ModelBackend>();
+            var input = new Input(new long[] { 10 });
+            var graph = new TFGraph();
 
-            var input = new Input(new long[] {  -1, 20});
-            var executableNode = input.Compile(backend);
+            input.Compile(graph);
 
-            executableNode.Should().NotBeNull();
+            input.Configuration.Should().NotBeNull();
+            input.Configuration.Output.Should().NotBeNull();
+            input.Configuration.Parameters.Length.Should().Be(0);
+            input.Configuration.Initializers.Length.Should().Be(0);
         }
 
         [Fact]
-        public void WhenCompiledCreatesPlaceholder()
+        public void MustHaveOneOrMoreDimensions()
         {
-            var backend = A.Fake<ModelBackend>();
+            var input = new Input(new long[] { });
+            var graph = new TFGraph();
 
-            var input = new Input(new long[] { -1, 20 });
-            var executableNode = input.Compile(backend);
+            input.Invoking(x => x.Compile(graph)).Should().Throw<ModelCompilationException>();
+        }
 
-            A.CallTo(() => backend.Placeholder(A<string>.Ignored, A<long[]>.Ignored)).MustHaveHappened();
+        [Fact]
+        public void IncludesExtraDimensionInOutputShape()
+        {
+            var input = new Input(new long[] {  10});
+
+            input.OutputShape.Should().BeEquivalentTo(new long[] { -1, 10 });
         }
     }
 }

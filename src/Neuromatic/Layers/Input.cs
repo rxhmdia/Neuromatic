@@ -1,53 +1,76 @@
-﻿using Neuromatic.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using System.Runtime.Serialization;
+using TensorFlow;
 
 namespace Neuromatic.Layers
 {
     /// <summary>
-    /// Defines an input for a model. 
-    /// Inputs are used to feed data into a model.
+    /// Defines a single input layer for a neural network.
     /// </summary>
     public class Input : Layer
     {
+        private readonly long[] _shape;
+
         /// <summary>
         /// Initializes a new instance of <see cref="Input"/>
         /// </summary>
-        /// <param name="elements">Number of neurons in the input layer</param>
-        /// <param name="name">Name of the input layer</param>
-        public Input(long[] shape) : base(null)
+        /// <param name="shape">Shape of the layer</param>
+        public Input(long[] shape)
         {
-            Shape = shape;
+            _shape = shape;
         }
 
         /// <summary>
         /// Initializes a new instance of <see cref="Input"/>
         /// </summary>
         /// <param name="name">Name of the layer</param>
-        /// <param name="shape">Shape of the input layer</param>
+        /// <param name="shape">Shape of the layer</param>
         public Input(long[] shape, string name) : base(name)
         {
-            Shape = shape;
+            _shape = shape;
         }
 
         /// <summary>
-        /// Gets the number of elements in the input layer
+        /// Gets the output shape for the layer
         /// </summary>
-        public override long[] Shape { get; }
+        public override long[] OutputShape
+        {
+            get
+            {
+                long[] outputShape = new long[_shape.Length + 1];
+
+                // First dimension is always unknown so that we can feed batches of data
+                outputShape[0] = -1;
+
+                for (int index = 0; index < _shape.Length; index++)
+                {
+                    outputShape[index + 1] = _shape[index];
+                }
+
+                return outputShape;
+            }
+        }
 
         /// <summary>
-        /// Compiles the input layer
+        /// <para>
+        /// Builds the layer by converting the abstract definition of the layer into 
+        /// a concrete set of instructions for Tensorflow and a layer configuration
+        /// for use when training the model.
+        /// </para>
+        /// <para>This method should assign the resulting layer configuration to the <see cref="Configuration"/>
+        /// property of the layer. This configuration is used by the model to determine the trainable parameters,
+        /// the output of the layer and any initializers that need to run as part of the training process.</para>
         /// </summary>
-        /// <param name="backend">Backend to use for compilation</param>
-        public override ExecutableModelNode Compile(ModelBackend backend)
+        /// <param name="graph">Graph to add the instructions to</param>
+        public override void Compile(TFGraph graph)
         {
-            if(Name == null)
+            if (_shape.Length == 0)
             {
-                Name = $"Input_{Guid.NewGuid().ToString()}";
+                throw new ModelCompilationException("Shape must have at least one dimension");
             }
 
-            return backend.Placeholder(this.Name, this.Shape);
+            var placeholder = graph.Placeholder(TFDataType.Double, new TFShape(OutputShape), operName: Name);
+            Configuration = new LayerConfiguration(new TFOutput[] { }, placeholder, new TFOperation[] { });
         }
     }
 }
