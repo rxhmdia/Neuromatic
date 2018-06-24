@@ -9,7 +9,7 @@ init:
 before_build:
   dotnet restore --verbosity m
 build_script:
-  - ps: dotnet build -c $Env:CONFIGURATION --version-suffix $Env:LABEL
+  - ps: dotnet build -c $Env:CONFIGURATION
 after_build:
   - ps: dotnet pack -c $Env:CONFIGURATION --version-suffix $Env:LABEL -o artifacts /p:{version}
 test_script:
