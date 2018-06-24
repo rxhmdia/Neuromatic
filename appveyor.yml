@@ -1,31 +1,20 @@
-&1189987678 version: 0.0.1.alpha-{build}
-pull_requests:
-  do_not_increment_build_number: &389385439 true
-branches:
-  only:
-  - master
+version: '0.0.1-alpha-{build}'
 image: Visual Studio 2017
-dotnet_csproj:
-  patch: true
-  file: '**\*.csproj'
-  version: &2032546570 '{version}'
-  package_version: '{version}'
-  assembly_version: '{version}'
-  file_version: '{version}'
-  informational_version: '{version}'
+configuration:
+ - Release
+environment:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+init:
+  - ps: $Env:LABEL = $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
 before_build:
-- &1455361020 ps: dotnet restore --verbosity m
-build:
-  publish_nuget: true
-  publish_nuget_symbols: true
-  verbosity: minimal
-before_package:
-- ps: dotnet pack -c Release
+  dotnet restore --verbosity m
+build_script:
+  - ps: dotnet build -c $Env:CONFIGURATION --version-suffix $Env:LABEL
+after_build:
+  - ps: dotnet pack -c $Env:CONFIGURATION --version-suffix $Env:LABEL -o artifacts
+test_script:
+  - ps: dotnet test -c $Env:CONFIGURATION
 artifacts:
-- path: '**\*.nupkg'
-  name: Nuget
-deploy:
-- provider: NuGet
-  api_key:
-    secure: 0ZoIjwzh6NJXkWK4zytT5T4ZjdCfckE4eLpqMoDSOy5Mr8OxNY4PCA8Y9c/TgDbo
-  artifact: '**/*.nupkg'
+  - path: artifacts\**\*.nupkg
+cache:
+- '%USERPROFILE%\.nuget\packages'
