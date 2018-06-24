@@ -7,11 +7,11 @@ environment:
 before_build:
   dotnet restore --verbosity m
 build_script:
-  - ps: dotnet build -c $Env:CONFIGURATION /p:PackageVersion=$env:APPVEYOR_BUILD_NUMBER
+  - ps: dotnet build -c $Env:CONFIGURATION /p:PackageVersion=0.0.1-alpha-$env:APPVEYOR_BUILD_NUMBER
 after_build:
-  - ps: dotnet pack -c $Env:CONFIGURATION -o artifacts /p:PackageVersion=$env:APPVEYOR_BUILD_NUMBER
+  - ps: dotnet pack -c $Env:CONFIGURATION -o artifacts /p:PackageVersion=0.0.1-alpha-$env:APPVEYOR_BUILD_NUMBER
 test_script:
-  - ps: dotnet test -c $Env:CONFIGURATION
+  - ps: dotnet test test\Neuromatic.Tests\Neuromatic.Tests.csproj -c $Env:CONFIGURATION
 artifacts:
   - path: artifacts\**\*.nupkg
 cache:
