@@ -1,6 +1,6 @@
-&573494705 version: 0.0.1.alpha-{build}
+&1189987678 version: 0.0.1.alpha-{build}
 pull_requests:
-  do_not_increment_build_number: &825395121 true
+  do_not_increment_build_number: &389385439 true
 branches:
   only:
   - master
@@ -8,17 +8,19 @@ image: Visual Studio 2017
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: &1824388997 '{version}'
+  version: &2032546570 '{version}'
   package_version: '{version}'
   assembly_version: '{version}'
   file_version: '{version}'
   informational_version: '{version}'
 before_build:
-- ps: dotnet restore --verbosity m
+- &1455361020 ps: dotnet restore --verbosity m
 build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
+before_package:
+- ps: dotnet pack -c Release
 artifacts:
 - path: '**\*.nupkg'
   name: Nuget
