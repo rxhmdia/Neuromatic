@@ -17,3 +17,10 @@ before_build:
 - ps: dotnet restore --verbosity m
 build:
   verbosity: minimal
+deploy:
+  provider: Nuget
+  server: 
+  skip_symbols: false
+  api_key:
+    secure: Sndifzc14SXKobg17Kgx53WS7amajntZcbdSTkNRc/hEoamIB9zQ4iCaAuzcznTO
+  artifact: /.*\.nupkg/
