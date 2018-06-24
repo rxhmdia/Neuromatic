@@ -133,42 +133,53 @@ namespace Neuromatic.Layers
         }
 
         /// <summary>
-        /// Compiles the dense layer
-        /// </summary>
-        /// <param name="graph">Graph to use for compiling the dense layer</param>
-        public override void Compile(TFGraph graph)
+        /// <para>
+        /// Builds the layer by converting the abstract definition of the layer into 
+        /// a concrete set of instructions for Tensorflow and a layer configuration
+        /// for use when training the model.
+        /// </para>
+        /// <para>This method should register any parameters and initializers with the compilation context.
+        /// So that they can be used during the training phase. </para>
+        /// <para>Additionally you are required to store the layer configuration in the 
+        /// <see cref="Configuration"/> property. This information is required as metadata 
+        /// when the model is used.</para>
+        /// <param name="context">Use this context to register trainable parameters
+        /// and build the computational graph for the layer</param>
+        public override TFOutput Compile(ModelCompilationContext context)
         {
-            if (!_input.Compiled)
-            {
-                _input.Compile(graph);
-            }
+            var input = _input.Compile(context);
 
             var inputDimension = _input.OutputShape[_input.OutputShape.Length - 1];
 
-            using (var scope = graph.WithScope(Name))
+            using (var scope = context.Graph.WithScope(Name))
             {
                 TFShape weightsShape = new TFShape(inputDimension, _units);
                 TFShape biasShape = new TFShape(_units);
 
-                var weights = graph.VariableV2(
+                var weights = context.Graph.VariableV2(
                     weightsShape,
                     TFDataType.Double, operName: "Weights");
 
-                var bias = graph.VariableV2(
+                var bias = context.Graph.VariableV2(
                     biasShape,
                     TFDataType.Double, operName: "Bias");
 
                 var initializers = new[]
                 {
-                    graph.Assign(weights, _weightsInitializer.Compile(graph, weightsShape)).Operation,
-                    graph.Assign(bias, _biasInitializer.Compile(graph, biasShape)).Operation
+                    context.Graph.Assign(weights, _weightsInitializer.Compile(context.Graph, weightsShape)).Operation,
+                    context.Graph.Assign(bias, _biasInitializer.Compile(context.Graph, biasShape)).Operation
                 };
 
                 // Formula: input * W + b
                 // TODO: Make sure that we can work without a bias term.
-                var output = graph.Add(graph.MatMul(_input.Configuration.Output, weights), bias);
+                var output = context.Graph.Add(context.Graph.MatMul(input, weights), bias);
 
-                Configuration = new LayerConfiguration(new[] { weights, bias }, output, initializers);
+                context.AddParameters(weights, bias);
+                context.AddInitializers(initializers);
+
+                Configuration = new LayerConfiguration(new[] {  weights,bias}, initializers, output);
+
+                return output;
             }
         }
     }

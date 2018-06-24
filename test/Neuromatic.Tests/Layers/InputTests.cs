@@ -3,6 +3,7 @@ using FluentAssertions;
 using Neuromatic.Layers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TensorFlow;
 using Xunit;
@@ -17,12 +18,12 @@ namespace Neuromatic.Tests.Layers
             var input = new Input(new long[] { 10 });
             var graph = new TFGraph();
 
-            input.Compile(graph);
+            input.Compile(new ModelCompilationContext(graph));
 
             input.Configuration.Should().NotBeNull();
             input.Configuration.Output.Should().NotBeNull();
-            input.Configuration.Parameters.Length.Should().Be(0);
-            input.Configuration.Initializers.Length.Should().Be(0);
+            input.Configuration.Parameters.Count().Should().Be(0);
+            input.Configuration.Initializers.Count().Should().Be(0);
         }
 
         [Fact]
@@ -31,7 +32,7 @@ namespace Neuromatic.Tests.Layers
             var input = new Input(new long[] { });
             var graph = new TFGraph();
 
-            input.Invoking(x => x.Compile(graph)).Should().Throw<ModelCompilationException>();
+            input.Invoking(x => x.Compile(new ModelCompilationContext(graph))).Should().Throw<ModelCompilationException>();
         }
 
         [Fact]

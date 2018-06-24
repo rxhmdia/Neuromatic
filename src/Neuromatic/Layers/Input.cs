@@ -57,20 +57,26 @@ namespace Neuromatic.Layers
         /// a concrete set of instructions for Tensorflow and a layer configuration
         /// for use when training the model.
         /// </para>
-        /// <para>This method should assign the resulting layer configuration to the <see cref="Configuration"/>
-        /// property of the layer. This configuration is used by the model to determine the trainable parameters,
-        /// the output of the layer and any initializers that need to run as part of the training process.</para>
-        /// </summary>
-        /// <param name="graph">Graph to add the instructions to</param>
-        public override void Compile(TFGraph graph)
+        /// <para>This method should register any parameters and initializers with the compilation context.
+        /// So that they can be used during the training phase. </para>
+        /// <para>Additionally you are required to store the layer configuration in the 
+        /// <see cref="Configuration"/> property. This information is required as metadata 
+        /// when the model is used.</para>
+        /// <param name="context">Use this context to register trainable parameters
+        /// and build the computational graph for the layer</param>
+        public override TFOutput Compile(ModelCompilationContext context)
         {
             if (_shape.Length == 0)
             {
                 throw new ModelCompilationException("Shape must have at least one dimension");
             }
 
-            var placeholder = graph.Placeholder(TFDataType.Double, new TFShape(OutputShape), operName: Name);
-            Configuration = new LayerConfiguration(new TFOutput[] { }, placeholder, new TFOperation[] { });
+            var placeholder = context.Graph.Placeholder(TFDataType.Double, 
+                new TFShape(OutputShape), operName: Name);
+
+            Configuration = new LayerConfiguration(new TFOutput[] { }, new TFOperation[] {  }, placeholder);
+
+            return placeholder;
         }
     }
 }

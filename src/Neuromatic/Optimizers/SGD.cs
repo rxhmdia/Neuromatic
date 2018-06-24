@@ -44,6 +44,8 @@ namespace Neuromatic.Optimizers
 
                 operations.Add(operation);
             }
+
+            Operations = operations;
         }
     }
 }

@@ -31,17 +31,19 @@ namespace Neuromatic.Layers
         public string Name { get; internal set; }
 
         /// <summary>
-        /// Gets the configuration for the layer
-        /// </summary>
-        /// <remarks>Derived classes should assign their configuration
-        /// to this property in order for the trainer to be able to train the final model</remarks>
-        public LayerConfiguration Configuration { get; protected set; }
-
-        /// <summary>
-        /// Compiles the layer into a set of tensorflow operators
-        /// </summary>
-        /// <param name="graph">Tensorflow graph to use for compiling the layer</param>
-        public abstract void Compile(TFGraph graph);
+        /// <para>
+        /// Builds the layer by converting the abstract definition of the layer into 
+        /// a concrete set of instructions for Tensorflow and a layer configuration
+        /// for use when training the model.
+        /// </para>
+        /// <para>This method should register any parameters and initializers with the compilation context.
+        /// So that they can be used during the training phase. </para>
+        /// <para>Additionally you are required to store the layer configuration in the 
+        /// <see cref="Configuration"/> property. This information is required as metadata 
+        /// when the model is used.</para>
+        /// <param name="context">Use this context to register trainable parameters
+        /// and build the computational graph for the layer</param>
+        public abstract TFOutput Compile(ModelCompilationContext context);
 
         /// <summary>
         /// Gets the output shape for the layer
@@ -49,9 +51,8 @@ namespace Neuromatic.Layers
         public abstract long[] OutputShape { get; }
 
         /// <summary>
-        /// Gets whether this layer was compiled before.
-        /// Primarily used by the model compilation process to determine the state of the graph.
+        /// Gets or sets the layer configuration for the layer
         /// </summary>
-        public bool Compiled => Configuration != null;
+        public LayerConfiguration Configuration { get; protected set; }
     }
 }

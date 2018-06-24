@@ -5,6 +5,7 @@ using System.Text;
 using TensorFlow;
 using Xunit;
 using FluentAssertions;
+using System.Linq;
 
 namespace Neuromatic.Tests.Layers
 {
@@ -18,10 +19,10 @@ namespace Neuromatic.Tests.Layers
             
             var dense = new Dense(2, input,"Dense0");
 
-            dense.Compile(graph);
+            dense.Compile(new ModelCompilationContext(graph));
 
-            dense.Configuration.Initializers.Length.Should().Be(2);
-            dense.Configuration.Parameters.Length.Should().Be(2);
+            dense.Configuration.Initializers.Count().Should().Be(2);
+            dense.Configuration.Parameters.Count().Should().Be(2);
             dense.Configuration.Output.Should().NotBeNull();
         }
 
@@ -31,7 +32,7 @@ namespace Neuromatic.Tests.Layers
             var graph = new TFGraph();
             var input = new Input(new[] { 10L });
 
-            input.Compile(graph);
+            input.Compile(new ModelCompilationContext(graph));
 
             var dense = new Dense(2, input, "Dense0");
 

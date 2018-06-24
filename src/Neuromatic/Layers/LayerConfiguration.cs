@@ -1,42 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using TensorFlow;
 
 namespace Neuromatic.Layers
 {
-    /// <summary>
-    /// Defines the configuration for a layer.
-    /// This configuration is used to collect things like optimizable parameters and 
-    /// initializers that should be ran at the beginning of the training process.
-    /// </summary>
     public class LayerConfiguration
     {
         /// <summary>
         /// Initializes a new instance of <see cref="LayerConfiguration"/>
         /// </summary>
-        /// <param name="parameters">Trainable parameters in the layer</param>
-        /// <param name="output">Output of the layer</param>
-        /// <param name="initializers">Initializes used in the layer</param>
-        public LayerConfiguration(TFOutput[] parameters, TFOutput output, TFOperation[] initializers)
+        /// <param name="parameters">Trainable parameters for the layer</param>
+        /// <param name="initializers">Initializers for the layer</param>
+        /// <param name="output">Output node for the layer</param>
+        public LayerConfiguration(IEnumerable<TFOutput> parameters, IEnumerable<TFOperation> initializers, TFOutput output)
         {
             Parameters = parameters;
-            Output = output;
             Initializers = initializers;
+            Output = output;
         }
 
         /// <summary>
-        /// Gets the trainable parameters for the layer
+        /// Gets the parameters for the layer
         /// </summary>
-        public TFOutput[] Parameters { get; }
-
-        /// <summary>
-        /// Gets the output of the layer
-        /// </summary>
-        public TFOutput Output { get; }
+        public IEnumerable<TFOutput> Parameters { get; }
 
         /// <summary>
         /// Gets the initializers for the layer
         /// </summary>
-        public TFOperation[] Initializers { get; }
+        public IEnumerable<TFOperation> Initializers { get; }
+
+        /// <summary>
+        /// Gets the output node for the layer
+        /// </summary>
+        public TFOutput Output { get; }
     }
 }
