@@ -1,5 +1,5 @@
 # Neuromatic
-[![Build Status](https://travis-ci.org/wmeints/Neuromatic.svg?branch=master)](https://travis-ci.org/wmeints/Neuromatic)
+[![Build status](https://ci.appveyor.com/api/projects/status/u1n232pi38573jgq/branch/master?svg=true)](https://ci.appveyor.com/project/wmeints/neuromatic/branch/master)
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/wmeints/Neuromatic.svg?columns=all)](https://waffle.io/wmeints/Neuromatic)
 
 

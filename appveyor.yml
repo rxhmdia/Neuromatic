@@ -1,0 +1,19 @@
+&593927692 version: 0.0.1.alpha-{build}
+pull_requests:
+  do_not_increment_build_number: &685911782 true
+branches:
+  only:
+  - master
+image: Visual Studio 2017
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: &663600869 '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+before_build:
+- ps: dotnet restore --verbosity m
+build:
+  verbosity: minimal
