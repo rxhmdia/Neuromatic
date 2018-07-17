@@ -15,7 +15,7 @@ namespace Neuromatic.Tests
         public void CanTrainForMultipleEpochs()
         {
             var input = new Input(new long[] { 2 }, "Input0");
-            var dense = new Dense(2, input, "Dense0");
+            var dense = new Dense(2, input, name: "Dense0");
 
             var model = new Model(new[] { input }, new[] { dense });
 
@@ -51,7 +51,7 @@ namespace Neuromatic.Tests
         public void CanPredict()
         {
             var input = new Input(new long[] { 2 }, "Input0");
-            var dense = new Dense(2, input, "Dense0");
+            var dense = new Dense(2, input, name: "Dense0");
 
             var model = new Model(new[] { input }, new[] { dense });
 

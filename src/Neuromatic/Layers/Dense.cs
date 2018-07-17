@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Neuromatic.Activations;
 using TensorFlow;
 
 namespace Neuromatic.Layers
@@ -19,55 +20,25 @@ namespace Neuromatic.Layers
     /// </summary>
     public class Dense : Layer
     {
-        private int _units;
-        private InitializationFunction _weightsInitializer;
-        private InitializationFunction _biasInitializer;
-        private Layer _input;
+        private readonly int _units;
+        private readonly Layer _input;
+        private readonly InitializationFunction _weightsInitializer;
+        private readonly InitializationFunction _biasInitializer;
+        private readonly ActivationFunction _activation;
 
         /// <summary>
         /// Initializes a new instance of <see cref="Dense"/>
         /// </summary>
         /// <param name="units">Kernel size of the layer</param>
+        /// <param name="activation">Activation function to use (default sigmoid)</param>
         /// <param name="input">Input layer to connect to</param>
-        /// <param name="biasInitializer">Initialization function for the bias vector</param>
-        /// <param name="weightsInitializer">Initialization function for the weights matrix</param>
-        public Dense(int units, InitializationFunction weightsInitializer, InitializationFunction biasInitializer, Layer input)
-        {
-            if (_units <= 0)
-            {
-                throw new ArgumentException("Invalid layer size. Should be greater than zero", nameof(units));
-            }
-
-            if (_weightsInitializer == null)
-            {
-                throw new ArgumentNullException(nameof(weightsInitializer));
-            }
-
-            if (_biasInitializer == null)
-            {
-                throw new ArgumentNullException(nameof(biasInitializer));
-            }
-
-            if (_input == null)
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
-
-            _units = units;
-            _weightsInitializer = weightsInitializer;
-            _biasInitializer = biasInitializer;
-            _input = input;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="Dense"/>
-        /// </summary>
-        /// <param name="units">Kernel size of the layer</param>
-        /// <param name="input">Input layer to connect to</param>
-        /// <param name="biasInitializer">Initialization function for the bias vector</param>
-        /// <param name="weightsInitializer">Initialization function for the weights matrix</param>
+        /// <param name="biasInitializer">Initialization function for the bias vector (default random normal)</param>
+        /// <param name="weightsInitializer">Initialization function for the weights matrix (default random normal)</param>
         /// <param name="name">Name of the layer</param>
-        public Dense(int units, InitializationFunction weightsInitializer, InitializationFunction biasInitializer, Layer input, string name) : base(name)
+        /// <remarks>
+        /// When no name is provided for a layer, one will be generated when you compile the model.
+        /// </remarks>
+        public Dense(int units, Layer input, ActivationFunction activation = null, InitializationFunction weightsInitializer = null, InitializationFunction biasInitializer = null, string name = null) : base(name)
         {
             if (units <= 0)
             {
@@ -75,41 +46,10 @@ namespace Neuromatic.Layers
             }
 
             _units = units;
-            _weightsInitializer = weightsInitializer ?? throw new ArgumentNullException(nameof(weightsInitializer));
-            _biasInitializer = biasInitializer ?? throw new ArgumentNullException(nameof(biasInitializer));
+            _activation = activation ?? new Sigmoid();
+            _weightsInitializer = weightsInitializer ?? new RandomNormal();
+            _biasInitializer = biasInitializer ?? new RandomNormal();
             _input = input ?? throw new ArgumentNullException(nameof(input));
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="Dense"/>
-        /// </summary>
-        /// <param name="units">Kernel size of the layer</param>
-        /// <param name="input">Input layer to connect to</param>
-        /// <param name="name">Name of the layer</param>
-        public Dense(int units, Layer input, string name) : base(name)
-        {
-            if (units <= 0)
-            {
-                throw new ArgumentException("Invalid layer size. Should be greater than zero", nameof(units));
-            }
-
-            _units = units;
-            _input = input ?? throw new ArgumentNullException(nameof(input));
-            _weightsInitializer = new RandomNormal();
-            _biasInitializer = new RandomNormal();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="Dense"/>
-        /// </summary>
-        /// <param name="units">Kernel size of the layer</param>
-        /// <param name="input">Input layer to connect to</param>
-        public Dense(int units, Layer input)
-        {
-            _units = units;
-            _input = input;
-            _weightsInitializer = new RandomNormal();
-            _biasInitializer = new RandomNormal();
         }
 
         /// <summary>
@@ -143,6 +83,7 @@ namespace Neuromatic.Layers
         /// <para>Additionally you are required to store the layer configuration in the 
         /// <see cref="Configuration"/> property. This information is required as metadata 
         /// when the model is used.</para>
+        /// </summary>
         /// <param name="context">Use this context to register trainable parameters
         /// and build the computational graph for the layer</param>
         public override TFOutput Compile(ModelCompilationContext context)
@@ -170,14 +111,15 @@ namespace Neuromatic.Layers
                     context.Graph.Assign(bias, _biasInitializer.Compile(context.Graph, biasShape)).Operation
                 };
 
-                // Formula: input * W + b
+                // Formula: f(input * W + b)
                 // TODO: Make sure that we can work without a bias term.
-                var output = context.Graph.Add(context.Graph.MatMul(input, weights), bias);
+                var output = _activation.Compile(context, context.Graph.Add(context.Graph.MatMul(input, weights), bias));
+
 
                 context.AddParameters(weights, bias);
                 context.AddInitializers(initializers);
 
-                Configuration = new LayerConfiguration(new[] {  weights,bias}, initializers, output);
+                Configuration = new LayerConfiguration(new[] { weights, bias }, initializers, output);
 
                 return output;
             }

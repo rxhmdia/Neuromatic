@@ -17,7 +17,7 @@ namespace Neuromatic.Tests.Layers
             var graph = new TFGraph();
             var input = new Input(new[] { 10L });
             
-            var dense = new Dense(2, input,"Dense0");
+            var dense = new Dense(2, input, name: "Dense0");
 
             dense.Compile(new ModelCompilationContext(graph));
 
@@ -34,7 +34,9 @@ namespace Neuromatic.Tests.Layers
 
             input.Compile(new ModelCompilationContext(graph));
 
-            var dense = new Dense(2, input, "Dense0");
+            var dense = new Dense(2, input, name: "Dense0");
+
+            dense.Compile(new ModelCompilationContext(graph));
 
             dense.OutputShape.Should().BeEquivalentTo(new long[] { -1, 2 });
         }
