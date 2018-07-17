@@ -14,11 +14,12 @@ namespace Neuromatic.Tests.Losses
         public void ReturnsLossFunction()
         {
             var graph = new TFGraph();
+            var context = new ModelCompilationContext(graph);
 
             var predictions = graph.Placeholder(TFDataType.Double, new TFShape(-1,10));
             var actuals = graph.Placeholder(TFDataType.Double, new TFShape(-1,10));
 
-            var loss = new MeanSquaredError().Compile(graph, predictions,actuals);
+            var loss = new MeanSquaredError().Compile(context, predictions,actuals);
 
             loss.Should().NotBeNull();
         }

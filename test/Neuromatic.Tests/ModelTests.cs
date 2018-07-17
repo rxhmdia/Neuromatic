@@ -46,7 +46,7 @@ namespace Neuromatic.Tests
                     });
             }
         }
-        
+
         [Fact]
         public void CanPredict()
         {

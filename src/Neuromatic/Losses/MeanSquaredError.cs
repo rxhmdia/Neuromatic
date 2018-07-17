@@ -15,13 +15,13 @@ namespace Neuromatic.Losses
         /// <summary>
         /// Compiles the loss function
         /// </summary>
-        /// <param name="graph"></param>
+        /// <param name="context">Compilation context to use</param>
         /// <param name="predictions">The output of the graph producing predictions</param>
         /// <param name="targets">The output of the graph containing the targets</param>
         /// <returns>Returns the compiled loss function</returns>
-        public override TFOutput Compile(TFGraph graph, TFOutput predictions, TFOutput targets)
+        public override TFOutput Compile(ModelCompilationContext context, TFOutput predictions, TFOutput targets)
         {
-            return graph.Mean(graph.Square(graph.Sub(predictions, targets)), graph.Const(-1));
+            return context.Graph.Mean(context.Graph.Square(context.Graph.Sub(predictions, targets)), context.Graph.Const(-1));
         }
     }
 }

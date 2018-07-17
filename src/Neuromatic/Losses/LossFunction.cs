@@ -11,10 +11,10 @@ namespace Neuromatic.Losses
         /// <summary>
         /// Compiles the loss function
         /// </summary>
-        /// <param name="graph"></param>
+        /// <param name="context">Compilation context to use</param>
         /// <param name="predictions">The output of the graph producing predictions</param>
         /// <param name="targets">The output of the graph containing the targets</param>
         /// <returns>Returns the compiled loss function</returns>
-        public abstract TFOutput Compile(TFGraph graph, TFOutput predictions, TFOutput targets);
+        public abstract TFOutput Compile(ModelCompilationContext context, TFOutput predictions, TFOutput targets);
     }
 }

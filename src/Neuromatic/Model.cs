@@ -87,7 +87,7 @@ namespace Neuromatic
                 _outputMapping.Add(layer, output);
                 _placeholderMapping.Add(layer, placeholder);
 
-                var compiledLoss = loss.Compile(_graph, output, placeholder);
+                var compiledLoss = loss.Compile(compilationContext, output, placeholder);
 
                 compiledLosses.Add(compiledLoss);
             }
