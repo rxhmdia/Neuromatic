@@ -81,7 +81,7 @@ namespace Neuromatic.Layers
         /// <para>This method should register any parameters and initializers with the compilation context.
         /// So that they can be used during the training phase. </para>
         /// <para>Additionally you are required to store the layer configuration in the 
-        /// <see cref="Configuration"/> property. This information is required as metadata 
+        /// <see cref="context"/> property. This information is required as metadata 
         /// when the model is used.</para>
         /// </summary>
         /// <param name="context">Use this context to register trainable parameters
