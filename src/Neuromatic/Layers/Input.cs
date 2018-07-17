@@ -66,6 +66,11 @@ namespace Neuromatic.Layers
         /// and build the computational graph for the layer</param>
         public override TFOutput Compile(ModelCompilationContext context)
         {
+            if (Configuration != null)
+            {
+                return Configuration.Output;
+            }
+
             if (_shape.Length == 0)
             {
                 throw new ModelCompilationException("Shape must have at least one dimension");

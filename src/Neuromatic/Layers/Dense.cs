@@ -88,8 +88,12 @@ namespace Neuromatic.Layers
         /// and build the computational graph for the layer</param>
         public override TFOutput Compile(ModelCompilationContext context)
         {
-            var input = _input.Compile(context);
+            if (Configuration != null)
+            {
+                return Configuration.Output;
+            }
 
+            var input = _input.Compile(context);
             var inputDimension = _input.OutputShape[_input.OutputShape.Length - 1];
 
             using (var scope = context.Graph.WithScope(Name))
