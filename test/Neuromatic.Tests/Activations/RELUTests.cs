@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Neuromatic.Tests.Activations
 {
-    public class RELUSpec
+    public class RELUTests
     {
         [Fact]
         public void ReturnsGraphElement()
