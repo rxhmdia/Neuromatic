@@ -25,7 +25,7 @@ namespace Neuromatic.Layers
         private readonly InitializationFunction _weightsInitializer;
         private readonly InitializationFunction _biasInitializer;
         private readonly ActivationFunction _activation;
-
+        private readonly bool _useBias;
         /// <summary>
         /// Initializes a new instance of <see cref="Dense"/>
         /// </summary>
@@ -34,11 +34,12 @@ namespace Neuromatic.Layers
         /// <param name="input">Input layer to connect to</param>
         /// <param name="biasInitializer">Initialization function for the bias vector (default random normal)</param>
         /// <param name="weightsInitializer">Initialization function for the weights matrix (default random normal)</param>
+        /// <param name="useBias">Whether or a bias term should be included in the layer</param>
         /// <param name="name">Name of the layer</param>
         /// <remarks>
         /// When no name is provided for a layer, one will be generated when you compile the model.
         /// </remarks>
-        public Dense(int units, Layer input, ActivationFunction activation = null, InitializationFunction weightsInitializer = null, InitializationFunction biasInitializer = null, string name = null) : base(name)
+        public Dense(int units, Layer input, ActivationFunction activation = null, InitializationFunction weightsInitializer = null, InitializationFunction biasInitializer = null, bool useBias = true, string name = null) : base(name)
         {
             if (units <= 0)
             {
@@ -46,6 +47,7 @@ namespace Neuromatic.Layers
             }
 
             _units = units;
+            _useBias = useBias;
             _activation = activation ?? new Sigmoid();
             _weightsInitializer = weightsInitializer ?? new RandomNormal();
             _biasInitializer = biasInitializer ?? new RandomNormal();
@@ -105,25 +107,39 @@ namespace Neuromatic.Layers
                     weightsShape,
                     TFDataType.Double, operName: "Weights");
 
-                var bias = context.Graph.VariableV2(
-                    biasShape,
-                    TFDataType.Double, operName: "Bias");
-
-                var initializers = new[]
+                var initializers = new List<TFOperation>
                 {
-                    context.Graph.Assign(weights, _weightsInitializer.Compile(context.Graph, weightsShape)).Operation,
-                    context.Graph.Assign(bias, _biasInitializer.Compile(context.Graph, biasShape)).Operation
+                    context.Graph.Assign(weights, _weightsInitializer.Compile(context.Graph, weightsShape)).Operation
                 };
 
-                // Formula: f(input * W + b)
-                // TODO: Make sure that we can work without a bias term.
-                var output = _activation.Compile(context, context.Graph.Add(context.Graph.MatMul(input, weights), bias));
+                var parameters = new List<TFOutput>
+                {
+                    weights
+                };
 
+                context.AddParameters(weights);
 
-                context.AddParameters(weights, bias);
+                var output = context.Graph.MatMul(input, weights);
+
+                if (_useBias)
+                {
+                    var bias = context.Graph.VariableV2(
+                        biasShape,
+                        TFDataType.Double, operName: "Bias");
+
+                    initializers.Add(context.Graph.Assign(bias, 
+                        _biasInitializer.Compile(context.Graph, biasShape)).Operation);
+
+                    parameters.Add(bias);
+
+                    output = context.Graph.Add(output, bias);
+                }
+                
+                output = _activation.Compile(context, output);
+                
+                Configuration = new LayerConfiguration(parameters, initializers, output);
+
                 context.AddInitializers(initializers);
-
-                Configuration = new LayerConfiguration(new[] { weights, bias }, initializers, output);
 
                 return output;
             }

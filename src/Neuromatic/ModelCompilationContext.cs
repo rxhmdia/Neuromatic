@@ -59,5 +59,14 @@ namespace Neuromatic
         {
             _initializers.AddRange(initializers);
         }
+
+        /// <summary>
+        /// Adds initializers to be run upon training
+        /// </summary>
+        /// <param name="initializers">Set of initializers to keep for running during the training phase</param>
+        public void AddInitializers(IEnumerable<TFOperation> initializers)
+        {
+            _initializers.AddRange(initializers);
+        }
     }
 }
