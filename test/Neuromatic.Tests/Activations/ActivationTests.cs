@@ -13,6 +13,7 @@ namespace Neuromatic.Tests.Activations
         [InlineData(typeof(RELU))]
         [InlineData(typeof(Sigmoid))]
         [InlineData(typeof(Softmax))]
+        [InlineData(typeof(Tanh))]
         public void ReturnsGraphElement(Type functionType)
         {
             var activation = (ActivationFunction)Activator.CreateInstance(functionType);
@@ -29,6 +30,7 @@ namespace Neuromatic.Tests.Activations
         [InlineData(typeof(RELU))]
         [InlineData(typeof(Sigmoid))]
         [InlineData(typeof(Softmax))]
+        [InlineData(typeof(Tanh))]
         public void ProducesOutput(Type functionType)
         {
             var activation = (ActivationFunction)Activator.CreateInstance(functionType);
