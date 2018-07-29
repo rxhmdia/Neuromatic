@@ -35,41 +35,47 @@ namespace Neuromatic.Optimizers
         {
             var graph = context.Graph;
             var operations = new List<TFOperation>();
-
             var moments = new List<TFOutput>();
 
-            foreach (var parameter in parameters)
+            using (var optimizerScope = graph.WithScope("SGD"))
             {
-                var moment = graph.VariableV2(graph.GetTensorShape(parameter), TFDataType.Double);
-                var initializer = graph.Zeros(graph.GetTensorShape(parameter)).Operation;
+                using (var momentScope = graph.WithScope("Moments"))
+                {
+                    foreach (var parameter in parameters)
+                    {
+                        var moment = graph.VariableV2(graph.GetTensorShape(parameter), TFDataType.Double);
+                        var initializer = graph.Assign(moment, graph.Zeros(graph.GetTensorShape(parameter))).Operation;
 
-                context.AddInitializers(initializer);
+                        context.AddInitializers(initializer);
 
-                moments.Add(moment);
-            }
+                        moments.Add(moment);
+                    }
+                }
 
-            var momentum = graph.Const(_momentum);
+                var momentum = graph.Const(_momentum, "Momentum");
 
-            var learningRate = graph.Const(_learningRate);
-            var gradients = graph.AddGradients(new[] { loss }, parameters.ToArray());
+                var learningRate = graph.Const(_learningRate);
+                var gradients = graph.AddGradients(new[] { loss }, parameters.ToArray());
 
-            foreach (var (parameter, gradient, moment) in ZipLearningParameters(parameters, gradients, moments))
-            {
-                // velocity = momentum * moment - learningRate * gradient
-                var velocity = graph.Sub(graph.Mul(momentum, moment), graph.Mul(gradient, learningRate));
-                var newWeight = graph.Add(parameter, velocity);
+                foreach (var (parameter, gradient, moment) in ZipLearningParameters(parameters, gradients, moments))
+                {
+                    // velocity = momentum * moment - learningRate * gradient
+                    var velocity = graph.Sub(graph.Mul(momentum, moment), graph.Mul(gradient, learningRate));
+                    var newWeight = graph.Add(parameter, velocity);
+                    var newMomentum = graph.Add(moment, velocity);
 
-                var operation = graph.Assign(parameter, newWeight).Operation;
+                    operations.Add(graph.Assign(parameter, newWeight).Operation);
+                    operations.Add(graph.Assign(moment, newMomentum).Operation);
+                }
 
-                operations.Add(operation);
             }
 
             Operations = operations;
         }
 
         private IEnumerable<(TFOutput weight, TFOutput gradient, TFOutput momentum)> ZipLearningParameters(
-            IEnumerable<TFOutput> parameters, 
-            IEnumerable<TFOutput> gradients, 
+            IEnumerable<TFOutput> parameters,
+            IEnumerable<TFOutput> gradients,
             IEnumerable<TFOutput> moments)
         {
             var zippedParamsWithGradients = Enumerable.Zip(parameters, gradients, (w, g) => (w, g));
