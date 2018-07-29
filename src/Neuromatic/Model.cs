@@ -98,7 +98,7 @@ namespace Neuromatic
             }
 
             _modelLoss = compiledLosses.Aggregate((left, right) => _graph.Add(left, right));
-            _optimizer.Compile(_graph, _modelLoss, compilationContext.Parameters);
+            _optimizer.Compile(compilationContext, _modelLoss, compilationContext.Parameters);
 
             _initializers = compilationContext.Initializers;
             _parameters = compilationContext.Parameters;

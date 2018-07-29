@@ -16,14 +16,14 @@ namespace Neuromatic.Optimizers
         /// to execute for each training batch
         /// </summary>
         protected IEnumerable<TFOperation> Operations { get;set;}
-
+        
         /// <summary>
         /// Compiles the optimizer
         /// </summary>
-        /// <param name="graph">Graph to use for compilation</param>
+        /// <param name="context">Context to use for compilation</param>
         /// <param name="loss">Loss function to use</param>
         /// <param name="parameters">Parameters to optimize</param>
-        public abstract void Compile(TFGraph graph, TFOutput loss, IEnumerable<TFOutput> parameters);
+        public abstract void Compile(ModelCompilationContext context, TFOutput loss, IEnumerable<TFOutput> parameters);
 
         /// <summary>
         /// Executes the optimizer function for a set of inputs
